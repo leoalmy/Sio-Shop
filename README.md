@@ -48,20 +48,20 @@ L'application utilise une base de données MySQL pour la persistance des donnée
 
 ## 🗂 Structure du Projet
 
-Sio_Shop/
-├── Metiers/
-│   ├── ProduitManager.cs       # CRUD produits et gestion CSV
-│   ├── ClientManager.cs        # CRUD clients
-│   ├── VenteManager.cs         # Gestion des ventes
-│   └── FactureManager.cs       # Génération PDF avec QuestPDF
-├── Session.cs                  # Gestion de la session utilisateur
-├── Connexion.cs                # Écran d'authentification
-├── MainMenu.cs                 # Menu principal
-├── Produit.cs                  # Gestion des produits (interface)
-├── Detail_Produit.cs           # Création/modification de produit
-├── Client.cs                   # Gestion des clients (interface)
-├── Vente.cs                    # Saisie de ventes (interface)
-└── Program.cs                  # Point d'entrée
+    Sio_Shop/
+    ├── Metiers/
+    │   ├── ProduitManager.cs      # CRUD produits et gestion CSV
+    │   ├── ClientManager.cs       # CRUD clients
+    │   ├── VenteManager.cs        # Gestion des ventes
+    │   └── FactureManager.cs      # Génération PDF avec QuestPDF
+    ├── Session.cs                 # Gestion de la session utilisateur
+    ├── Connexion.cs               # Écran d'authentification
+    ├── MainMenu.cs                # Menu principal
+    ├── Produit.cs                 # Gestion des produits (interface)
+    ├── Detail_Produit.cs          # Création/modification de produit
+    ├── Client.cs                  # Gestion des clients (interface)
+    ├── Vente.cs                   # Saisie de ventes (interface)
+    └── Program.cs                 # Point d'entrée
 
 ## 🔧 Installation et Configuration
 
@@ -72,6 +72,7 @@ Sio_Shop/
 - NuGet Package Manager
 
 ### Dépendances NuGet
+
 MySql.Data      (Connecteur MySQL)
 QuestPDF        (Génération de factures PDF)
 
@@ -154,6 +155,7 @@ PROD002,30
 - Les stocks s'ajoutent aux quantités existantes : `stock = stock + quantité`
 
 ### Exemple de Rapport CSV
+
 Fichier : livraison_mars_2026.csv
 Résultat :
 ✅ 45 produits mis à jour
@@ -178,7 +180,7 @@ Documents/
 
 ## 🔐 Sécurité
 
-- **Injection SQL** : Utilisation exclusive de paramètres SQL (@param)
+- **Injection SQL** : Utilisation exclusive de paramètres SQL (`@param`)
 - **Session utilisateur** : Gestion des accès selon les rôles
 - **Contrôle d'accès** : Fonctionnalités sensibles (Maj Stock) réservées aux admins
 - **Gestion erreurs** : Messages d'erreur BDD sans exposition de données sensibles
