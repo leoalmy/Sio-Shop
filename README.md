@@ -48,20 +48,21 @@ L'application utilise une base de données MySQL pour la persistance des donnée
 
 ## 🗂 Structure du Projet
 
-    Sio_Shop/
-    ├── Metiers/
-    │   ├── ProduitManager.cs      # CRUD produits et gestion CSV
-    │   ├── ClientManager.cs       # CRUD clients
-    │   ├── VenteManager.cs        # Gestion des ventes
-    │   └── FactureManager.cs      # Génération PDF avec QuestPDF
-    ├── Session.cs                 # Gestion de la session utilisateur
-    ├── Connexion.cs               # Écran d'authentification
-    ├── MainMenu.cs                # Menu principal
-    ├── Produit.cs                 # Gestion des produits (interface)
-    ├── Detail_Produit.cs          # Création/modification de produit
-    ├── Client.cs                  # Gestion des clients (interface)
-    ├── Vente.cs                   # Saisie de ventes (interface)
-    └── Program.cs                 # Point d'entrée
+
+Sio_Shop/
+├── Metiers/
+│   ├── ProduitManager.cs      # CRUD produits et gestion CSV
+│   ├── ClientManager.cs       # CRUD clients
+│   ├── VenteManager.cs        # Gestion des ventes
+│   └── FactureManager.cs      # Génération PDF avec QuestPDF
+├── Session.cs                 # Gestion de la session utilisateur
+├── Connexion.cs               # Écran d'authentification
+├── MainMenu.cs                # Menu principal
+├── Produit.cs                 # Gestion des produits (interface)
+├── Detail_Produit.cs          # Création/modification de produit
+├── Client.cs                  # Gestion des clients (interface)
+├── Vente.cs                   # Saisie de ventes (interface)
+└── Program.cs                 # Point d'entrée
 
 ## 🔧 Installation et Configuration
 
@@ -137,6 +138,7 @@ Le menu offre 4 options :
 
 ### Format CSV Stocks
 
+```
 **Séparateur point-virgule :**
 Reference;Quantité
 PROD001;50
@@ -147,6 +149,7 @@ PROD003;100
 Reference,Quantité
 PROD001,50
 PROD002,30
+```
 
 **Caractéristiques :**
 - L'en-tête (première ligne) est ignorée automatiquement
@@ -156,21 +159,26 @@ PROD002,30
 
 ### Exemple de Rapport CSV
 
+
+```
 Fichier : livraison_mars_2026.csv
 Résultat :
 ✅ 45 produits mis à jour
 ❌ 3 références inconnues
+```
 
 ## 📦 Arborescence des Factures
 
 Les factures PDF sont générées dans :
+
+```
 Documents/
 └── Sio Shop/
     └── Factures_2026/
         ├── Facture_0001_Jean_Dupont.pdf
         ├── Facture_0002_Marie_Martin.pdf
         └── ...
-
+```
 **Contenu facture :**
 - En-tête : Logo "SIO SHOP" + adresse
 - Numéro facture unique et date
