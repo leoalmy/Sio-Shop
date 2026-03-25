@@ -48,7 +48,7 @@ L'application utilise une base de données MySQL pour la persistance des donnée
 
 ## 🗂 Structure du Projet
 
-
+```text
 Sio_Shop/
 ├── Metiers/
 │   ├── ProduitManager.cs      # CRUD produits et gestion CSV
@@ -63,6 +63,7 @@ Sio_Shop/
 ├── Client.cs                  # Gestion des clients (interface)
 ├── Vente.cs                   # Saisie de ventes (interface)
 └── Program.cs                 # Point d'entrée
+```
 
 ## 🔧 Installation et Configuration
 
@@ -73,12 +74,10 @@ Sio_Shop/
 - NuGet Package Manager
 
 ### Dépendances NuGet
-
-MySql.Data      (Connecteur MySQL)
-QuestPDF        (Génération de factures PDF)
+- `MySql.Data` (Connecteur MySQL)
+- `QuestPDF` (Génération de factures PDF)
 
 ### Configuration Base de Données
-
 1. Créer une base de données MySQL nommée `sio_shop`
 2. Créer les tables nécessaires :
    - `produit` (reference, marque, nom, prix, stock)
@@ -138,14 +137,16 @@ Le menu offre 4 options :
 
 ### Format CSV Stocks
 
-```
 **Séparateur point-virgule :**
+```csv
 Reference;Quantité
 PROD001;50
 PROD002;30
 PROD003;100
+```
 
 **Séparateur virgule :**
+```csv
 Reference,Quantité
 PROD001,50
 PROD002,30
@@ -159,8 +160,7 @@ PROD002,30
 
 ### Exemple de Rapport CSV
 
-
-```
+```text
 Fichier : livraison_mars_2026.csv
 Résultat :
 ✅ 45 produits mis à jour
@@ -171,7 +171,7 @@ Résultat :
 
 Les factures PDF sont générées dans :
 
-```
+```text
 Documents/
 └── Sio Shop/
     └── Factures_2026/
@@ -179,6 +179,7 @@ Documents/
         ├── Facture_0002_Marie_Martin.pdf
         └── ...
 ```
+
 **Contenu facture :**
 - En-tête : Logo "SIO SHOP" + adresse
 - Numéro facture unique et date
