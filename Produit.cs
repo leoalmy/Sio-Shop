@@ -28,30 +28,31 @@ namespace Sio_Shop
                 btn_MajStock.Visible = false; // Simple mortel, on cache le bouton
             }
 
-            // 2. On charge les marques dans la liste déroulante
-            cb_Marque.Items.Clear();
-            cb_Marque.Items.Add("TOUTES"); // On remet l'option par défaut
+            // 2. On charge la liste déroulante des marques
+            DataTable dtMarques = ProduitManager.ObtenirToutesLesMarques();
+            
+            // Astuce : On crée manuellement une ligne "TOUTES" avec l'ID 0
+            DataRow ligneToutes = dtMarques.NewRow();
+            ligneToutes["id_marque"] = 0;
+            ligneToutes["nom_marque"] = "TOUTES";
+            dtMarques.Rows.InsertAt(ligneToutes, 0); // On la met tout en haut de la liste
 
-            // On va chercher les vraies marques en BDD et on les ajoute
-            List<string> lesMarques = ProduitManager.ObtenirToutesLesMarques();
-            foreach (string marque in lesMarques)
-            {
-                cb_Marque.Items.Add(marque);
-            }
+            cb_Marque.DisplayMember = "nom_marque"; // Ce qu'on lit
+            cb_Marque.ValueMember = "id_marque";    // L'ID caché
+            cb_Marque.DataSource = dtMarques;
+            cb_Marque.SelectedIndex = 0;
 
-            cb_Marque.SelectedIndex = 0; // On sélectionne "TOUTES" par défaut
-
-            // 3. Ensuite, on charge le tableau des produits
+            // 3. On charge le tableau
             ChargerProduits();
         }
 
         // 2. Méthode pour remplir le tableau (avec filtre de marque optionnel)
-        private void ChargerProduits(string filtreMarque = "")
+        private void ChargerProduits(int idMarqueFiltre = 0)
         {
             dgv_Produits.Rows.Clear();
 
             // On demande les données au Manager
-            DataTable mesDonnees = ProduitManager.ObtenirTousLesProduits(filtreMarque);
+            DataTable mesDonnees = ProduitManager.ObtenirTousLesProduits(idMarqueFiltre);
 
             foreach (DataRow ligne in mesDonnees.Rows)
             {
@@ -95,13 +96,9 @@ namespace Sio_Shop
         // 3. Quand on change la marque dans la liste déroulante
         private void cb_Marque_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cb_Marque.Text == "TOUTES")
+            if (cb_Marque.SelectedValue != null && cb_Marque.SelectedValue is int idMarque)
             {
-                ChargerProduits(""); // On envoie vide pour tout avoir
-            }
-            else
-            {
-                ChargerProduits(cb_Marque.Text); // On envoie la marque choisie
+                ChargerProduits(idMarque);
             }
         }
 
@@ -156,8 +153,9 @@ namespace Sio_Shop
 
                     MessageBox.Show(message, "Bilan de la livraison", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Très important : on recharge le tableau pour que l'admin voie les nouveaux stocks !
-                    ChargerProduits(cb_Marque.Text == "TOUTES" ? "" : cb_Marque.Text);
+                    // On récupère l'ID de la marque actuellement sélectionnée (ou 0 si "TOUTES") pour recharger le tableau
+                    int idMarqueChoisie = cb_Marque.SelectedValue != null ? Convert.ToInt32(cb_Marque.SelectedValue) : 0;
+                    ChargerProduits(idMarqueChoisie);
                 }
             }
         }

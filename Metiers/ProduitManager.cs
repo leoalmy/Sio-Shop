@@ -1,16 +1,18 @@
 ﻿using MySql.Data.MySqlClient;
+using Mysqlx.Crud;
+using Sio_Shop;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using System.IO;
 
 namespace Sio_Shop.Metiers
 {
     public static class ProduitManager
     {
-        // 1. Lister les produits (avec recherche sur le nom ou la marque)
-        public static DataTable ObtenirTousLesProduits(string recherche = "")
+        // 1. Obtenir les produits (avec INNER JOIN pour afficher le nom de la marque, pas son ID)
+        public static DataTable ObtenirTousLesProduits(int idMarqueFiltre = 0)
         {
             DataTable tableau = new DataTable();
             try
@@ -18,15 +20,19 @@ namespace Sio_Shop.Metiers
                 using (MySqlConnection maConnexion = MySQL.GetDBConnection())
                 {
                     maConnexion.Open();
-                    string requete = "SELECT reference, marque, nom, prix, stock FROM produit";
+                    string requete = @"
+                        SELECT p.reference, m.nom_marque AS marque, p.nom, p.prix, p.stock 
+                        FROM produit p
+                        INNER JOIN marque m ON p.id_marque = m.id_marque";
 
-                    if (!string.IsNullOrWhiteSpace(recherche))
-                        requete += " WHERE nom LIKE @recherche OR marque LIKE @recherche";
+                    // Si on a choisi une marque spécifique dans la liste déroulante
+                    if (idMarqueFiltre > 0)
+                        requete += " WHERE p.id_marque = @idMarque";
 
                     using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                     {
-                        if (!string.IsNullOrWhiteSpace(recherche))
-                            commande.Parameters.AddWithValue("@recherche", "%" + recherche + "%");
+                        if (idMarqueFiltre > 0)
+                            commande.Parameters.AddWithValue("@idMarque", idMarqueFiltre);
 
                         using (MySqlDataAdapter adaptateur = new MySqlDataAdapter(commande))
                         {
@@ -39,7 +45,7 @@ namespace Sio_Shop.Metiers
             return tableau;
         }
 
-        // 2. Récupérer UN SEUL produit pour la page de détails
+        // 2. Récupérer un produit par sa réf (on récupère aussi l'id_marque pour la liste déroulante !)
         public static DataTable ObtenirProduitParRef(string reference)
         {
             DataTable tableau = new DataTable();
@@ -48,14 +54,12 @@ namespace Sio_Shop.Metiers
                 using (MySqlConnection maConnexion = MySQL.GetDBConnection())
                 {
                     maConnexion.Open();
-                    string requete = "SELECT marque, nom, prix, stock FROM produit WHERE reference = @ref";
+                    string requete = "SELECT id_marque, nom, prix, stock FROM produit WHERE reference = @ref";
                     using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                     {
                         commande.Parameters.AddWithValue("@ref", reference);
                         using (MySqlDataAdapter adaptateur = new MySqlDataAdapter(commande))
-                        {
                             adaptateur.Fill(tableau);
-                        }
                     }
                 }
             }
@@ -63,19 +67,18 @@ namespace Sio_Shop.Metiers
             return tableau;
         }
 
-        // 3. Ajouter un produit
-        public static void AjouterProduit(string reference, string marque, string nom, string prix, string stock)
+        // 3. Ajouter un produit (prend un INT idMarque maintenant !)
+        public static void AjouterProduit(string reference, int idMarque, string nom, string prix, string stock)
         {
             using (MySqlConnection maConnexion = MySQL.GetDBConnection())
             {
                 maConnexion.Open();
-                string requete = "INSERT INTO produit (reference, marque, nom, prix, stock) VALUES (@ref, @marque, @nom, @prix, @stock)";
+                string requete = "INSERT INTO produit (reference, id_marque, nom, prix, stock) VALUES (@ref, @idMarque, @nom, @prix, @stock)";
                 using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                 {
                     commande.Parameters.AddWithValue("@ref", reference);
-                    commande.Parameters.AddWithValue("@marque", marque);
+                    commande.Parameters.AddWithValue("@idMarque", idMarque);
                     commande.Parameters.AddWithValue("@nom", nom);
-                    // Astuce : On remplace la virgule par un point pour le SQL si on tape un prix à virgule
                     commande.Parameters.AddWithValue("@prix", prix.Replace(",", "."));
                     commande.Parameters.AddWithValue("@stock", stock);
                     commande.ExecuteNonQuery();
@@ -84,15 +87,15 @@ namespace Sio_Shop.Metiers
         }
 
         // 4. Modifier un produit
-        public static void ModifierProduit(string reference, string marque, string nom, string prix, string stock)
+        public static void ModifierProduit(string reference, int idMarque, string nom, string prix, string stock)
         {
             using (MySqlConnection maConnexion = MySQL.GetDBConnection())
             {
                 maConnexion.Open();
-                string requete = "UPDATE produit SET marque=@marque, nom=@nom, prix=@prix, stock=@stock WHERE reference=@ref";
+                string requete = "UPDATE produit SET id_marque=@idMarque, nom=@nom, prix=@prix, stock=@stock WHERE reference=@ref";
                 using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                 {
-                    commande.Parameters.AddWithValue("@marque", marque);
+                    commande.Parameters.AddWithValue("@idMarque", idMarque);
                     commande.Parameters.AddWithValue("@nom", nom);
                     commande.Parameters.AddWithValue("@prix", prix.Replace(",", "."));
                     commande.Parameters.AddWithValue("@stock", stock);
@@ -102,35 +105,28 @@ namespace Sio_Shop.Metiers
             }
         }
 
-        // 5. Récupérer la liste des marques sans doublons (pour les listes déroulantes)
-        public static List<string> ObtenirToutesLesMarques()
+        // 5. Récupérer TOUTES les marques (renvoie un DataTable maintenant, plus une List<string>)
+        public static DataTable ObtenirToutesLesMarques()
         {
-            List<string> listeMarques = new List<string>();
+            DataTable tableau = new DataTable();
             try
             {
                 using (MySqlConnection maConnexion = MySQL.GetDBConnection())
                 {
                     maConnexion.Open();
-                    // Le mot-clé DISTINCT permet de ne pas récupérer 10 fois "Samsung"
-                    string requete = "SELECT DISTINCT marque FROM produit WHERE marque IS NOT NULL AND marque != ''";
-
+                    string requete = "SELECT id_marque, nom_marque FROM marque ORDER BY nom_marque";
                     using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                     {
-                        using (MySqlDataReader reader = commande.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                listeMarques.Add(reader["marque"].ToString());
-                            }
-                        }
+                        using (MySqlDataAdapter adaptateur = new MySqlDataAdapter(commande))
+                            adaptateur.Fill(tableau);
                     }
                 }
             }
             catch (Exception ex) { MessageBox.Show("Erreur BDD (Marques) : " + ex.Message); }
-
-            return listeMarques;
+            return tableau;
         }
 
+        
         // 6. Mise à jour des stocks via un fichier CSV
         public static (int lignesMaj, int erreurs) MettreAJourStockDepuisCSV(string cheminFichier)
         {
@@ -139,7 +135,6 @@ namespace Sio_Shop.Metiers
 
             try
             {
-                // On lit absolument toutes les lignes du fichier d'un seul coup
                 string[] lignes = File.ReadAllLines(cheminFichier);
 
                 using (MySqlConnection maConnexion = MySQL.GetDBConnection())
@@ -148,23 +143,17 @@ namespace Sio_Shop.Metiers
 
                     foreach (string ligne in lignes)
                     {
-                        // On ignore les lignes vides
                         if (string.IsNullOrWhiteSpace(ligne)) continue;
 
-                        // On découpe la ligne. Le CSV peut être séparé par des virgules ou des points-virgules
                         string[] colonnes = ligne.Split(';', ',');
 
-                        // On s'assure qu'il y a bien au moins 2 colonnes (Référence et Quantité)
                         if (colonnes.Length >= 2)
                         {
                             string reference = colonnes[0].Trim();
                             string strQuantite = colonnes[1].Trim();
 
-                            // On essaie de transformer la quantité en chiffre. 
-                            // (L'avantage de TryParse, c'est que si la première ligne du fichier contient les mots "Reference;Quantite" (les en-têtes), ça va juste l'ignorer sans planter !)
                             if (int.TryParse(strQuantite, out int quantiteLivree))
                             {
-                                // La magie du SQL : on fait "stock = stock + quantiteLivree" !
                                 string requete = "UPDATE produit SET stock = stock + @qte WHERE reference = @ref";
 
                                 using (MySqlCommand cmd = new MySqlCommand(requete, maConnexion))
@@ -172,13 +161,10 @@ namespace Sio_Shop.Metiers
                                     cmd.Parameters.AddWithValue("@qte", quantiteLivree);
                                     cmd.Parameters.AddWithValue("@ref", reference);
 
-                                    // ExecuteNonQuery renvoie le nombre de lignes modifiées en BDD
                                     int resultat = cmd.ExecuteNonQuery();
 
-                                    if (resultat > 0)
-                                        lignesMaj++; // Produit trouvé et mis à jour !
-                                    else
-                                        erreurs++;   // Référence introuvable dans la base
+                                    if (resultat > 0) lignesMaj++;
+                                    else erreurs++;
                                 }
                             }
                         }
@@ -191,7 +177,7 @@ namespace Sio_Shop.Metiers
                 return (-1, -1);
             }
 
-            return (lignesMaj, erreurs); // On renvoie le bilan de l'opération
+            return (lignesMaj, erreurs);
         }
     }
 }

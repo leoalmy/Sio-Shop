@@ -6,20 +6,20 @@ Application de gestion de ventes, clients et produits pour petits commerces.
 
 **Sio Shop** est une application desktop développée en C# avec Windows Forms. Elle permet de gérer efficacement :
 
-- **Clients** : Création, consultation et gestion des informations clients
-- **Produits** : Gestion du catalogue avec stocks, marques, prix
+- **Clients** : Création, consultation, historique d'achats et régénération de factures
+- **Produits** : Gestion du catalogue avec stocks, marques (base de données normalisée), prix
 - **Ventes** : Saisie de transactions avec génération de factures PDF
 - **Stocks** : Mise à jour via fichiers CSV pour l'administrateur
 
-L'application utilise une base de données MySQL pour la persistance des données.
+L'application utilise une base de données MySQL normalisée pour la persistance des données.
 
 ## 🛠 Spécifications Techniques
 
 - **Langage** : C# 7.3
 - **Framework** : .NET Framework 4.8
 - **Interface** : Windows Forms
-- **Base de données** : MySQL
-- **Génération PDF** : QuestPDF
+- **Base de données** : MySQL (Architecture relationnelle)
+- **Génération PDF** : QuestPDF (Architecture Fluent)
 - **Gestion fichiers** : Support CSV/TXT
 
 ## 🚀 Fonctionnalités
@@ -30,19 +30,21 @@ L'application utilise une base de données MySQL pour la persistance des donnée
 - Rôles différenciés (administrateur `matricule = 0` vs employés)
 
 ### Gestion des Produits
-- **Consultation du catalogue** : Affichage de tous les produits avec filtrage par marque
-- **Création de produits** : Ajout de nouveaux produits avec référence, marque, nom, prix et stock
+- **Consultation du catalogue** : Affichage de tous les produits avec filtrage dynamique par marque
+- **Création de produits** : Ajout de nouveaux produits via listes déroulantes sécurisées (clés étrangères)
 - **Modification de produits** : Édition des informations existantes
 - **Affichage du statut stock** : Indication visuelle "HORS STOCK" pour stock = 0
-- **Recherche** : Filtrage par nom de produit ou marque
 - **Admin uniquement** : Mise à jour des stocks via fichier CSV avec rapport détaillé
 
 ### Gestion des Clients
 - Création et modification des informations clients
 - Consultation de la liste des clients
+- **Historique d'achats** : Visualisation des anciennes commandes depuis la fiche client
+- **Régénération PDF** : Création et ouverture instantanée des factures d'anciens achats à la volée
 
 ### Gestion des Ventes
-- Saisie des transactions avec détails produits
+- Saisie des transactions avec détails produits et contrôle des stocks
+- Calcul automatique de la TVA (20%) et du TTC
 - Génération automatique de factures en PDF professionnel
 - Archivage par année dans le dossier Documents de l'utilisateur
 
@@ -51,16 +53,17 @@ L'application utilise une base de données MySQL pour la persistance des donnée
 ```text
 Sio_Shop/
 ├── Metiers/
-│   ├── ProduitManager.cs      # CRUD produits et gestion CSV
-│   ├── ClientManager.cs       # CRUD clients
-│   ├── VenteManager.cs        # Gestion des ventes
-│   └── FactureManager.cs      # Génération PDF avec QuestPDF
+│   ├── ProduitManager.cs      # CRUD produits, jointures SQL et gestion CSV
+│   ├── ClientManager.cs       # CRUD clients et historique d'achats
+│   ├── VenteManager.cs        # Gestion des ventes et MAJ stocks
+│   └── FactureManager.cs      # Dessin et génération PDF avec QuestPDF
 ├── Session.cs                 # Gestion de la session utilisateur
 ├── Connexion.cs               # Écran d'authentification
 ├── MainMenu.cs                # Menu principal
 ├── Produit.cs                 # Gestion des produits (interface)
 ├── Detail_Produit.cs          # Création/modification de produit
 ├── Client.cs                  # Gestion des clients (interface)
+├── Detail_Client.cs           # Fiche client, historique et factures
 ├── Vente.cs                   # Saisie de ventes (interface)
 └── Program.cs                 # Point d'entrée
 ```
@@ -75,20 +78,21 @@ Sio_Shop/
 
 ### Dépendances NuGet
 - `MySql.Data` (Connecteur MySQL)
-- `QuestPDF` (Génération de factures PDF)
+- `QuestPDF` (Génération de factures PDF modernes)
 
 ### Configuration Base de Données
 1. Créer une base de données MySQL nommée `sio_shop`
-2. Créer les tables nécessaires :
-   - `produit` (reference, marque, nom, prix, stock)
-   - `client` (informations client)
-   - `vente` (transactions)
+2. Créer les tables relationnelles nécessaires :
+   - `marque` (id_marque, nom_marque)
+   - `produit` (reference, id_marque, nom, prix, stock)
+   - `client` (Num_client, nom, prenom, adresse, mail, tel)
+   - `pdt_achete` (id_achat, Num_client, REFERENCE, date_achat)
 3. Configurer la chaîne de connexion dans la classe `MySQL`
 
 ### Lancement
 1. Ouvrir le projet dans Visual Studio
 2. Restaurer les packages NuGet
-3. Compiler et exécuter (F5)
+3. Compiler et exécuter (F5) ou générer la version `Release`
 4. Identifiants de test : matricule `0` pour admin
 
 ## 💻 Utilisation
@@ -98,40 +102,15 @@ Sio_Shop/
 - Accès administrateur avec matricule **0** (bouton "Maj Stock" visible)
 - Employé normal : accès aux consultation et saisie uniquement
 
-### Interface Principale
-Le menu offre 4 options :
-1. **Saisir une vente** - Nouvelle transaction client
-2. **Gestion des clients** - Création/modification clients
-3. **Gestion des produits** - CRUD produits + stocks
-4. **Déconnexion** - Retour à l'écran de connexion
-
 ### Gestion des Produits
+- Vue tableau avec filtrage par marque et alertes visuelles sur les stocks.
+- Modification / Création via la fiche produit.
 
-#### Consultation
-- Vue tableau avec : Référence | Marque | Nom | Prix | Stock
-- Filtrage dynamique par marque (liste déroulante)
-- Stock = 0 → Affichage "HORS STOCK" avec coloration
-- Clic sur une ligne → Ouverture fiche produit
-
-#### Création de Produit
-1. Cliquer sur "Nouveau produit"
-2. Remplir : Référence (obligatoire), Marque, Nom (obligatoire), Prix, Stock
-3. Sauvegarder → Ajout en base de données
-
-#### Modification de Produit
-1. Cliquer sur un produit dans le tableau
-2. Référence en lecture seule (identifiant unique)
-3. Modifier les autres champs
-4. Sauvegarder → Update en base de données
-
-#### Mise à Jour des Stocks (Admin)
-1. Préparer un fichier CSV (voir format ci-dessous)
-2. Cliquer sur le bouton **"Maj Stock"** (visible uniquement pour admin)
-3. Sélectionner le fichier CSV/TXT
-4. L'application affiche un rapport :
-   - ✅ Nombre de produits mis à jour
-   - ❌ Nombre de références introuvables
-5. Le tableau se recharge automatiquement
+### Mise à Jour des Stocks (Admin)
+1. Préparer un fichier CSV (voir format ci-dessous).
+2. Cliquer sur le bouton **"Maj Stock"** (visible uniquement pour admin).
+3. Sélectionner le fichier CSV/TXT.
+4. L'application affiche un rapport (succès et erreurs) et recharge le tableau.
 
 ## 📄 Formats de Fichiers
 
@@ -144,35 +123,14 @@ PROD001;50
 PROD002;30
 PROD003;100
 ```
-
-**Séparateur virgule :**
-```csv
-Reference,Quantité
-PROD001,50
-PROD002,30
-```
-
-**Caractéristiques :**
-- L'en-tête (première ligne) est ignorée automatiquement
-- Les lignes vides sont ignorées
-- Les références inconnues génèrent une erreur
-- Les stocks s'ajoutent aux quantités existantes : `stock = stock + quantité`
-
-### Exemple de Rapport CSV
-
-```text
-Fichier : livraison_mars_2026.csv
-Résultat :
-✅ 45 produits mis à jour
-❌ 3 références inconnues
-```
+*(L'en-tête est ignorée automatiquement. Les quantités s'additionnent aux stocks existants).*
 
 ## 📦 Arborescence des Factures
 
-Les factures PDF sont générées dans :
+Les factures PDF sont générées dynamiquement dans :
 
 ```text
-Documents/
+C:/Users/[Utilisateur]/Documents/
 └── Sio Shop/
     └── Factures_2026/
         ├── Facture_0001_Jean_Dupont.pdf
@@ -180,55 +138,41 @@ Documents/
         └── ...
 ```
 
-**Contenu facture :**
-- En-tête : Logo "SIO SHOP" + adresse
-- Numéro facture unique et date
-- Détails produits achetés
-- Calcul TTC avec TVA
-- Signature client
+## 🔐 Sécurité & Ergonomie (UX/UI)
 
-## 🔐 Sécurité
-
-- **Injection SQL** : Utilisation exclusive de paramètres SQL (`@param`)
-- **Session utilisateur** : Gestion des accès selon les rôles
-- **Contrôle d'accès** : Fonctionnalités sensibles (Maj Stock) réservées aux admins
-- **Gestion erreurs** : Messages d'erreur BDD sans exposition de données sensibles
-- **Validation input** : Contrôle des champs obligatoires
+- **Injection SQL** : Utilisation exclusive de paramètres SQL (`@param`).
+- **DataBinding** : Utilisation de `DisplayMember` et `ValueMember` pour lier les ID (clés primaires) aux listes déroulantes de manière invisible.
+- **Gestion des erreurs UI** : Désactivation du `MultiSelect` sur les tableaux et grisage dynamique des boutons (ex: "Voir facture") si aucune ligne n'est sélectionnée.
+- **Rôles** : Fonctionnalités sensibles (Maj Stock) réservées aux admins.
 
 ## 💡 Particularités Techniques
 
-### ProduitManager
-- **ObtenirTousLesProduits()** : Recherche LIKE sur nom et marque
-- **ObtenirProduitParRef()** : Récupération fiche produit unique
-- **AjouterProduit()** : Insertion avec conversion virgule → point
-- **ModifierProduit()** : Update ciblée par référence
-- **ObtenirToutesLesMarques()** : Liste DISTINCT sans doublons
-- **MettreAJourStockDepuisCSV()** : Parse CSV + UPDATE massif avec rapport
+### Managers & Base de données
+- **Architecture Normalisée** : Séparation des marques dans une table dédiée.
+- **Jointures SQL** : Utilisation massive d'`INNER JOIN` pour rapatrier les noms de marques et les détails d'historiques.
+- **ObtenirToutesLesMarques()** : Alimente dynamiquement les listes déroulantes depuis la BDD.
+- **MettreAJourStockDepuisCSV()** : Parse CSV + requêtes UPDATE avec compteur de succès/erreurs.
 
 ### Conversion Décimales
 Les prix saisis avec virgule (1,50€) sont automatiquement convertis en point (1.50) pour la base de données SQL.
 
 ### Gestion des Changements de Page
-Variable `_changementDePage` empêche les demandes de confirmation inutiles lors de la navigation entre pages.
+La variable `_changementDePage` empêche les demandes de confirmation inutiles lors de la navigation entre pages.
 
 ## 📝 Notes de Développement
 
-- Commentaires en français dans le code pour faciliter la maintenance
-- Code structuré avec pattern **Manager** pour les accès données (DAL)
-- Gestion erreurs centralisée avec `MessageBox`
-- DataTable pour les requêtes SELECT (flexibilité)
-- MySqlCommand pour les INSERT/UPDATE/DELETE (sécurité)
-- Support UTF-8 pour les accents et caractères spéciaux
+- Commentaires en français dans le code pour faciliter la maintenance.
+- Code structuré avec pattern **Manager** pour les accès données (DAL).
+- Gestion erreurs centralisée avec `MessageBox`.
 
 ## 🧪 Checklist de Test
 
 - [ ] Admin : Bouton "Maj Stock" visible
-- [ ] Employé : Bouton "Maj Stock" masqué
-- [ ] Création produit : Référence + Nom obligatoires
-- [ ] Modification : Référence en lecture seule
+- [ ] Création produit : Ajout fonctionnel avec sélection de l'ID Marque
 - [ ] Stock = 0 : Affichage "HORS STOCK" coloré
 - [ ] CSV : Import avec rapport correct
-- [ ] Factures : Génération PDF dans Documents/Sio Shop/
+- [ ] Historique Client : Les anciens achats s'affichent correctement
+- [ ] Factures : Génération et ouverture du PDF fonctionnelles
 
 ## 📚 Ressources
 

@@ -22,12 +22,11 @@ namespace Sio_Shop
         private void Detail_Produit_Load(object sender, EventArgs e)
         {
             // --- NOUVEAU : On remplit la liste des marques disponibles ---
-            cbx_Marque.Items.Clear();
-            List<string> lesMarques = ProduitManager.ObtenirToutesLesMarques();
-            foreach (string marque in lesMarques)
-            {
-                cbx_Marque.Items.Add(marque);
-            }
+            DataTable dtMarques = ProduitManager.ObtenirToutesLesMarques();
+            cbx_Marque.DisplayMember = "nom_marque";
+            cbx_Marque.ValueMember = "id_marque";
+            cbx_Marque.DataSource = dtMarques;
+            cbx_Marque.SelectedIndex = -1;
             // -------------------------------------------------------------
 
             if (!string.IsNullOrEmpty(_refProduitActuel))
@@ -53,7 +52,7 @@ namespace Sio_Shop
 
             if (dataProduit.Rows.Count > 0)
             {
-                cbx_Marque.Text = dataProduit.Rows[0]["marque"].ToString();
+                cbx_Marque.SelectedValue = dataProduit.Rows[0]["id_marque"];
                 txt_Nom.Text = dataProduit.Rows[0]["nom"].ToString();
                 txt_Prix.Text = dataProduit.Rows[0]["prix"].ToString();
                 txt_Stock.Text = dataProduit.Rows[0]["stock"].ToString();
@@ -64,24 +63,21 @@ namespace Sio_Shop
         private void btn_Enregistrer_Click(object sender, EventArgs e)
         {
             // Vérification basique
-            if (string.IsNullOrWhiteSpace(txt_Reference.Text) || string.IsNullOrWhiteSpace(txt_Nom.Text))
+            if (string.IsNullOrWhiteSpace(txt_Reference.Text) || string.IsNullOrWhiteSpace(txt_Nom.Text) || cbx_Marque.SelectedValue == null)
             {
-                MessageBox.Show("La référence et le nom sont obligatoires !");
+                MessageBox.Show("Référence, Nom et Marque obligatoires !");
                 return;
             }
 
             try
             {
+                // On récupère l'ID caché de la marque
+                int idMarqueChoisie = Convert.ToInt32(cbx_Marque.SelectedValue);
+
                 if (string.IsNullOrEmpty(_refProduitActuel))
-                {
-                    // CRÉATION
-                    ProduitManager.AjouterProduit(txt_Reference.Text, cbx_Marque.Text, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
-                }
+                    ProduitManager.AjouterProduit(txt_Reference.Text, idMarqueChoisie, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
                 else
-                {
-                    // MODIFICATION
-                    ProduitManager.ModifierProduit(txt_Reference.Text, cbx_Marque.Text, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
-                }
+                    ProduitManager.ModifierProduit(txt_Reference.Text, idMarqueChoisie, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
 
                 MessageBox.Show("Produit enregistré avec succès !");
 

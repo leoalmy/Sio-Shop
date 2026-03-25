@@ -112,10 +112,11 @@ namespace Sio_Shop.Metiers
                 {
                     maConnexion.Open();
                     string requete = @"
-                        SELECT a.id_achat, a.date_achat, p.reference, p.marque, p.nom, p.prix 
-                        FROM pdt_achete a
-                        INNER JOIN produit p ON a.REFERENCE = p.reference
-                        WHERE a.Num_client = @id";
+                SELECT a.id_achat, a.date_achat, p.reference, m.nom_marque AS marque, p.nom, p.prix 
+                FROM pdt_achete a
+                INNER JOIN produit p ON a.REFERENCE = p.reference
+                INNER JOIN marque m ON p.id_marque = m.id_marque
+                WHERE a.Num_client = @id";
 
                     using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                     {
