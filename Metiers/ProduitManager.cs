@@ -11,7 +11,7 @@ namespace Sio_Shop.Metiers
 {
     public static class ProduitManager
     {
-        // 1. Obtenir les produits (avec INNER JOIN pour afficher le nom de la marque, pas son ID)
+        // 1. Obtenir les produits
         public static DataTable ObtenirTousLesProduits(int idMarqueFiltre = 0)
         {
             DataTable tableau = new DataTable();
@@ -45,7 +45,7 @@ namespace Sio_Shop.Metiers
             return tableau;
         }
 
-        // 2. Récupérer un produit par sa réf (on récupère aussi l'id_marque pour la liste déroulante !)
+        // 2. Récupérer un produit par sa réf
         public static DataTable ObtenirProduitParRef(string reference)
         {
             DataTable tableau = new DataTable();
@@ -67,16 +67,15 @@ namespace Sio_Shop.Metiers
             return tableau;
         }
 
-        // 3. Ajouter un produit (prend un INT idMarque maintenant !)
-        public static void AjouterProduit(string reference, int idMarque, string nom, string prix, string stock)
+        // 3. Ajouter un produit
+        public static void AjouterProduit(int idMarque, string nom, string prix, string stock)
         {
             using (MySqlConnection maConnexion = MySQL.GetDBConnection())
             {
                 maConnexion.Open();
-                string requete = "INSERT INTO produit (reference, id_marque, nom, prix, stock) VALUES (@ref, @idMarque, @nom, @prix, @stock)";
+                string requete = "INSERT INTO produit (id_marque, nom, prix, stock) VALUES (@ref, @idMarque, @nom, @prix, @stock)";
                 using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
                 {
-                    commande.Parameters.AddWithValue("@ref", reference);
                     commande.Parameters.AddWithValue("@idMarque", idMarque);
                     commande.Parameters.AddWithValue("@nom", nom);
                     commande.Parameters.AddWithValue("@prix", prix.Replace(",", "."));
@@ -104,30 +103,8 @@ namespace Sio_Shop.Metiers
                 }
             }
         }
-
-        // 5. Récupérer TOUTES les marques (renvoie un DataTable maintenant, plus une List<string>)
-        public static DataTable ObtenirToutesLesMarques()
-        {
-            DataTable tableau = new DataTable();
-            try
-            {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
-                {
-                    maConnexion.Open();
-                    string requete = "SELECT id_marque, nom_marque FROM marque ORDER BY nom_marque";
-                    using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
-                    {
-                        using (MySqlDataAdapter adaptateur = new MySqlDataAdapter(commande))
-                            adaptateur.Fill(tableau);
-                    }
-                }
-            }
-            catch (Exception ex) { MessageBox.Show("Erreur BDD (Marques) : " + ex.Message); }
-            return tableau;
-        }
-
         
-        // 6. Mise à jour des stocks via un fichier CSV
+        // 5. Mise à jour des stocks via un fichier CSV
         public static (int lignesMaj, int erreurs) MettreAJourStockDepuisCSV(string cheminFichier)
         {
             int lignesMaj = 0;

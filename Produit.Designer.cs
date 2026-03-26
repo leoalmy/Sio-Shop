@@ -57,15 +57,15 @@
             this.col_Nom,
             this.col_Prix,
             this.col_Stock});
-            this.dgv_Produits.Location = new System.Drawing.Point(27, 25);
-            this.dgv_Produits.Margin = new System.Windows.Forms.Padding(4);
+            this.dgv_Produits.Location = new System.Drawing.Point(20, 20);
             this.dgv_Produits.Name = "dgv_Produits";
             this.dgv_Produits.ReadOnly = true;
             this.dgv_Produits.RowHeadersVisible = false;
             this.dgv_Produits.RowHeadersWidth = 51;
             this.dgv_Produits.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgv_Produits.Size = new System.Drawing.Size(867, 554);
+            this.dgv_Produits.Size = new System.Drawing.Size(650, 450);
             this.dgv_Produits.TabIndex = 0;
+            this.dgv_Produits.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Produits_CellContentClick);
             this.dgv_Produits.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Produits_CellContentClick);
             // 
             // col_Reference
@@ -107,10 +107,9 @@
             // 
             this.lbl_RechercheAvancee.AutoSize = true;
             this.lbl_RechercheAvancee.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_RechercheAvancee.Location = new System.Drawing.Point(920, 49);
-            this.lbl_RechercheAvancee.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_RechercheAvancee.Location = new System.Drawing.Point(690, 40);
             this.lbl_RechercheAvancee.Name = "lbl_RechercheAvancee";
-            this.lbl_RechercheAvancee.Size = new System.Drawing.Size(271, 31);
+            this.lbl_RechercheAvancee.Size = new System.Drawing.Size(217, 26);
             this.lbl_RechercheAvancee.TabIndex = 1;
             this.lbl_RechercheAvancee.Text = "Recherche avancée :";
             // 
@@ -118,10 +117,9 @@
             // 
             this.lbl_Marque.AutoSize = true;
             this.lbl_Marque.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_Marque.Location = new System.Drawing.Point(933, 123);
-            this.lbl_Marque.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_Marque.Location = new System.Drawing.Point(700, 100);
             this.lbl_Marque.Name = "lbl_Marque";
-            this.lbl_Marque.Size = new System.Drawing.Size(85, 24);
+            this.lbl_Marque.Size = new System.Drawing.Size(66, 18);
             this.lbl_Marque.TabIndex = 2;
             this.lbl_Marque.Text = "Marque :";
             // 
@@ -131,10 +129,9 @@
             this.cb_Marque.FormattingEnabled = true;
             this.cb_Marque.Items.AddRange(new object[] {
             "TOUTES"});
-            this.cb_Marque.Location = new System.Drawing.Point(1040, 119);
-            this.cb_Marque.Margin = new System.Windows.Forms.Padding(4);
+            this.cb_Marque.Location = new System.Drawing.Point(780, 97);
             this.cb_Marque.Name = "cb_Marque";
-            this.cb_Marque.Size = new System.Drawing.Size(199, 28);
+            this.cb_Marque.Size = new System.Drawing.Size(150, 24);
             this.cb_Marque.TabIndex = 3;
             this.cb_Marque.Text = "TOUTES";
             this.cb_Marque.SelectedIndexChanged += new System.EventHandler(this.cb_Marque_SelectedIndexChanged);
@@ -145,10 +142,9 @@
             this.btn_NouveauProduit.FlatAppearance.BorderColor = System.Drawing.Color.LightGray;
             this.btn_NouveauProduit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_NouveauProduit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_NouveauProduit.Location = new System.Drawing.Point(987, 246);
-            this.btn_NouveauProduit.Margin = new System.Windows.Forms.Padding(4);
+            this.btn_NouveauProduit.Location = new System.Drawing.Point(740, 200);
             this.btn_NouveauProduit.Name = "btn_NouveauProduit";
-            this.btn_NouveauProduit.Size = new System.Drawing.Size(213, 43);
+            this.btn_NouveauProduit.Size = new System.Drawing.Size(160, 35);
             this.btn_NouveauProduit.TabIndex = 4;
             this.btn_NouveauProduit.Text = "Nouveau produit";
             this.btn_NouveauProduit.UseVisualStyleBackColor = false;
@@ -160,10 +156,9 @@
             this.btn_Retour.FlatAppearance.BorderColor = System.Drawing.Color.LightGray;
             this.btn_Retour.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Retour.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Retour.Location = new System.Drawing.Point(1133, 535);
-            this.btn_Retour.Margin = new System.Windows.Forms.Padding(4);
+            this.btn_Retour.Location = new System.Drawing.Point(850, 435);
             this.btn_Retour.Name = "btn_Retour";
-            this.btn_Retour.Size = new System.Drawing.Size(120, 43);
+            this.btn_Retour.Size = new System.Drawing.Size(90, 35);
             this.btn_Retour.TabIndex = 5;
             this.btn_Retour.Text = "Retour";
             this.btn_Retour.UseVisualStyleBackColor = false;
@@ -175,10 +170,9 @@
             this.btn_MajStock.FlatAppearance.BorderColor = System.Drawing.Color.LightGray;
             this.btn_MajStock.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_MajStock.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_MajStock.Location = new System.Drawing.Point(987, 366);
-            this.btn_MajStock.Margin = new System.Windows.Forms.Padding(4);
+            this.btn_MajStock.Location = new System.Drawing.Point(740, 297);
             this.btn_MajStock.Name = "btn_MajStock";
-            this.btn_MajStock.Size = new System.Drawing.Size(213, 43);
+            this.btn_MajStock.Size = new System.Drawing.Size(160, 35);
             this.btn_MajStock.TabIndex = 6;
             this.btn_MajStock.Text = "MAJ Stock";
             this.btn_MajStock.UseVisualStyleBackColor = false;
@@ -186,10 +180,10 @@
             // 
             // Produit
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.ClientSize = new System.Drawing.Size(1280, 603);
+            this.ClientSize = new System.Drawing.Size(960, 490);
             this.Controls.Add(this.btn_MajStock);
             this.Controls.Add(this.btn_Retour);
             this.Controls.Add(this.btn_NouveauProduit);
@@ -198,7 +192,6 @@
             this.Controls.Add(this.lbl_RechercheAvancee);
             this.Controls.Add(this.dgv_Produits);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Produit";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestion des produits";

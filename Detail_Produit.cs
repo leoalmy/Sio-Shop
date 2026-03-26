@@ -22,7 +22,7 @@ namespace Sio_Shop
         private void Detail_Produit_Load(object sender, EventArgs e)
         {
             // --- NOUVEAU : On remplit la liste des marques disponibles ---
-            DataTable dtMarques = ProduitManager.ObtenirToutesLesMarques();
+            DataTable dtMarques = MarqueManager.ObtenirToutesLesMarques();
             cbx_Marque.DisplayMember = "nom_marque";
             cbx_Marque.ValueMember = "id_marque";
             cbx_Marque.DataSource = dtMarques;
@@ -34,13 +34,14 @@ namespace Sio_Shop
                 // MODE MODIFICATION
                 lbl_Titre.Text = "Modification du produit :";
                 txt_Reference.Text = _refProduitActuel;
-                txt_Reference.ReadOnly = true;
+                txt_Reference.ReadOnly = false;
                 ChargerInfosProduit();
             }
             else
             {
                 // MODE CRÉATION
                 lbl_Titre.Text = "Nouveau produit :";
+                txt_Reference.Text = "Auto";
                 txt_Reference.ReadOnly = false;
             }
         }
@@ -75,7 +76,7 @@ namespace Sio_Shop
                 int idMarqueChoisie = Convert.ToInt32(cbx_Marque.SelectedValue);
 
                 if (string.IsNullOrEmpty(_refProduitActuel))
-                    ProduitManager.AjouterProduit(txt_Reference.Text, idMarqueChoisie, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
+                    ProduitManager.AjouterProduit(idMarqueChoisie, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
                 else
                     ProduitManager.ModifierProduit(txt_Reference.Text, idMarqueChoisie, txt_Nom.Text, txt_Prix.Text, txt_Stock.Text);
 

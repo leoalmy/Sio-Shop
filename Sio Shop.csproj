@@ -106,8 +106,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Detail_Marque.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Detail_Marque.Designer.cs">
+      <DependentUpon>Detail_Marque.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Marque.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Marque.Designer.cs">
+      <DependentUpon>Marque.cs</DependentUpon>
+    </Compile>
     <Compile Include="Metiers\ClientManager.cs" />
     <Compile Include="Metiers\FactureManager.cs" />
+    <Compile Include="Metiers\MarqueManager.cs" />
     <Compile Include="Metiers\ProduitManager.cs" />
     <Compile Include="Metiers\VenteManager.cs" />
     <Compile Include="MySQL\MySQL.cs" />
@@ -165,11 +178,17 @@
     <EmbeddedResource Include="Detail_Client.resx">
       <DependentUpon>Detail_Client.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Detail_Marque.resx">
+      <DependentUpon>Detail_Marque.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Detail_Produit.resx">
       <DependentUpon>Detail_Produit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Marque.resx">
+      <DependentUpon>Marque.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Produit.resx">
       <DependentUpon>Produit.cs</DependentUpon>

@@ -1,6 +1,5 @@
 ﻿using Sio_Shop.Metiers; // On n'oublie pas d'appeler notre boîte à outils !
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -29,7 +28,7 @@ namespace Sio_Shop
             }
 
             // 2. On charge la liste déroulante des marques
-            DataTable dtMarques = ProduitManager.ObtenirToutesLesMarques();
+            DataTable dtMarques = MarqueManager.ObtenirToutesLesMarques(true);
             
             // Astuce : On crée manuellement une ligne "TOUTES" avec l'ID 0
             DataRow ligneToutes = dtMarques.NewRow();

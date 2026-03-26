@@ -51,7 +51,7 @@ namespace Sio_Shop.Metiers
                             {
                                 col.Item().Text("SIO SHOP").FontSize(28).SemiBold().FontColor(Colors.Blue.Darken2);
                                 col.Item().Text("123 Avenue des Développeurs");
-                                col.Item().Text("75000 Paris, FRANCE");
+                                col.Item().Text("80000 Amiens, FRANCE");
                                 col.Item().Text("contact@sioshop.fr").FontColor(Colors.Blue.Medium);
                             });
 

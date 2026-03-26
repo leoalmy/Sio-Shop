@@ -52,6 +52,14 @@ namespace Sio_Shop
             this.Hide();
         }
 
+        private void btn_GestionMarques_Click(object sender, EventArgs e)
+        {
+            // Ouvre la page Marque
+            Marque pageProduits = new Marque();
+            pageProduits.Show();
+            this.Hide();
+        }
+
         private void btn_Deconnexion_Click(object sender, EventArgs e)
         {
             _deconnexionEnCours = true; // On prévient l'application qu'on se déconnecte exprès
