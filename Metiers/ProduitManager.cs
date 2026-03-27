@@ -17,7 +17,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = @"
@@ -51,7 +51,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "SELECT id_marque, nom, prix, stock FROM produit WHERE reference = @ref";
@@ -70,7 +70,7 @@ namespace Sio_Shop.Metiers
         // 3. Ajouter un produit
         public static void AjouterProduit(int idMarque, string nom, string prix, string stock)
         {
-            using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+            using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
             {
                 maConnexion.Open();
                 string requete = "INSERT INTO produit (id_marque, nom, prix, stock) VALUES (@ref, @idMarque, @nom, @prix, @stock)";
@@ -88,7 +88,7 @@ namespace Sio_Shop.Metiers
         // 4. Modifier un produit
         public static void ModifierProduit(string reference, int idMarque, string nom, string prix, string stock)
         {
-            using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+            using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
             {
                 maConnexion.Open();
                 string requete = "UPDATE produit SET id_marque=@idMarque, nom=@nom, prix=@prix, stock=@stock WHERE reference=@ref";
@@ -114,7 +114,7 @@ namespace Sio_Shop.Metiers
             {
                 string[] lignes = File.ReadAllLines(cheminFichier);
 
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
 
@@ -155,6 +155,27 @@ namespace Sio_Shop.Metiers
             }
 
             return (lignesMaj, erreurs);
+        }
+
+        // 6. Compter le nombre de produits en rupture de stock
+        public static int CompterProduitsEnRupture()
+        {
+            int ruptures = 0;
+            try
+            {
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
+                {
+                    maConnexion.Open();
+                    // On compte uniquement les produits hors stock
+                    string requete = "SELECT COUNT(*) FROM produit WHERE stock = 0";
+                    using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
+                    {
+                        ruptures = Convert.ToInt32(commande.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Erreur BDD (Compte Ruptures) : " + ex.Message); }
+            return ruptures;
         }
     }
 }

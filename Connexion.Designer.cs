@@ -153,6 +153,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sio Shop - Connexion";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Connexion_FormClosing);
+            this.Load += new System.EventHandler(this.Connexion_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);

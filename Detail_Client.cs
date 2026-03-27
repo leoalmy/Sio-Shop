@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI;
 using Sio_Shop.Metiers;
+using Sio_Shop.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,6 +30,7 @@ namespace Sio_Shop
         // --- 1. AU CHARGEMENT DE LA PAGE ---
         private void Detail_Client_Load(object sender, EventArgs e)
         {
+            ThemeManager.AppliquerTheme(this);
 
             // Si l'ID n'est pas vide, on est en mode MODIFICATION
             if (!string.IsNullOrEmpty(_idClientActuel))

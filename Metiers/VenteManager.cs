@@ -11,7 +11,7 @@ namespace Sio_Shop.Metiers
         {
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
 
@@ -43,6 +43,33 @@ namespace Sio_Shop.Metiers
                 MessageBox.Show("Erreur lors de la vente : " + ex.Message);
                 return -1; // En cas d'erreur, on renvoie -1
             }
+        }
+
+        // Méthode pour calculer le chiffre d'affaires total
+        public static decimal CalculerChiffreAffairesTotal()
+        {
+            decimal chiffreAffaires = 0;
+            try
+            {
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
+                {
+                    maConnexion.Open();
+                    // On fait la somme des prix des produits liés aux achats
+                    // COALESCE permet de renvoyer 0 si la table des ventes est vide (évite les crashs)
+                    string requete = @"
+                        SELECT COALESCE(SUM(p.prix), 0) 
+                        FROM pdt_achete a
+                        INNER JOIN produit p ON a.REFERENCE = p.reference";
+
+                    using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
+                    {
+                        // On convertit en décimal car c'est de l'argent (type double en base)
+                        chiffreAffaires = Convert.ToDecimal(commande.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Erreur BDD (Calcul CA) : " + ex.Message); }
+            return chiffreAffaires;
         }
     }
 }

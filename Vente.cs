@@ -1,4 +1,5 @@
 ﻿using Sio_Shop.Metiers; // On n'oublie pas les managers !
+using Sio_Shop.Utils;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -17,6 +18,8 @@ namespace Sio_Shop
         // 1. Au chargement de la page
         private void Vente_Load(object sender, EventArgs e)
         {
+            ThemeManager.AppliquerTheme(this);
+
             // --- CHARGER LES CLIENTS ---
             DataTable clients = ClientManager.ObtenirTousLesClients();
             clients.Columns.Add("affichage_client", typeof(string), "Convert(Num_client, 'System.String') + ' - ' + nom + ' ' + prenom + ' - ' + adresse + ' - ' + tel");

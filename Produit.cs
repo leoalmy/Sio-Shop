@@ -1,4 +1,5 @@
 ﻿using Sio_Shop.Metiers; // On n'oublie pas d'appeler notre boîte à outils !
+using Sio_Shop.Utils;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -17,6 +18,8 @@ namespace Sio_Shop
         // 1. Au chargement de la page
         private void Produit_Load(object sender, EventArgs e)
         {
+            ThemeManager.AppliquerTheme(this);
+
             // 1. On affiche le bouton de mise à jour du stock uniquement si c'est l'admin qui est connecté
             if (Session.Matricule == "0")
             {
@@ -64,15 +67,19 @@ namespace Sio_Shop
                 {
                     affichageStock = "HORS STOCK";
                 }
+                else if (Convert.ToInt32(vraiStock) <= 5)
+                {
+                    affichageStock += " (STOCK FAIBLE)";
+                }
 
-                // 3. On ajoute la ligne ET on récupère son "index" (sa position dans le tableau)
-                int indexLigne = dgv_Produits.Rows.Add(
-                    ligne["reference"].ToString(),
-                    ligne["marque"].ToString(),
-                    ligne["nom"].ToString(),
-                    ligne["prix"].ToString() + " €",
-                    affichageStock
-                );
+                    // 3. On ajoute la ligne ET on récupère son "index" (sa position dans le tableau)
+                    int indexLigne = dgv_Produits.Rows.Add(
+                        ligne["reference"].ToString(),
+                        ligne["marque"].ToString(),
+                        ligne["nom"].ToString(),
+                        ligne["prix"].ToString() + " €",
+                        affichageStock
+                    );
 
                 // 4. On applique la peinture si le stock est à 0 !
                 if (vraiStock == "0")
@@ -89,6 +96,14 @@ namespace Sio_Shop
                     ligneActuelle.Cells[4].Style.ForeColor = System.Drawing.Color.Yellow;
                     ligneActuelle.Cells[4].Style.Font = new System.Drawing.Font(dgv_Produits.Font, System.Drawing.FontStyle.Bold);
                 }
+                else if (Convert.ToInt32(vraiStock) <= 5)
+                {
+                    DataGridViewRow ligneActuelle = dgv_Produits.Rows[indexLigne];
+                    ligneActuelle.DefaultCellStyle.BackColor = System.Drawing.Color.Orange;
+                    ligneActuelle.Cells[4].Style.Font = new System.Drawing.Font(dgv_Produits.Font, System.Drawing.FontStyle.Bold);
+                }
+
+                dgv_Produits.ClearSelection();
             }
         }
 

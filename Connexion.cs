@@ -1,13 +1,6 @@
-﻿using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Crypto.Generators;
+﻿using Sio_Shop.Metiers;
+using Sio_Shop.Utils;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sio_Shop
@@ -24,71 +17,29 @@ namespace Sio_Shop
             string identifiantTapé = textBox1.Text;
             string mdpTapé = textBox2.Text;
 
+            // 1. Vérification des champs vides
             if (string.IsNullOrWhiteSpace(identifiantTapé) || string.IsNullOrWhiteSpace(mdpTapé))
             {
                 MessageBox.Show("Veuillez remplir tous les champs.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            try
+            // 2. Appel au Manager pour vérifier la connexion
+            if (EmployeManager.VerifierConnexion(identifiantTapé, mdpTapé, out string nomEmploye, out string matriculeEmploye))
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
-                {
-                    maConnexion.Open();
+                // Bingo ! On met en session
+                Session.Nom = nomEmploye;
+                Session.Matricule = matriculeEmploye;
 
-                    // 1. NOUVELLE REQUÊTE : On récupère aussi le nom et le matricule !
-                    string requete = "SELECT nom, matricule, mdp FROM employe WHERE login = @id";
-
-                    using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
-                    {
-                        commande.Parameters.AddWithValue("@id", identifiantTapé);
-
-                        // 2. On utilise ExecuteReader pour lire plusieurs colonnes
-                        using (MySqlDataReader reader = commande.ExecuteReader())
-                        {
-                            // 3. Si on a trouvé un utilisateur
-                            if (reader.Read())
-                            {
-                                // On récupère ses infos
-                                string nomEmployeBase = reader["nom"].ToString();
-                                string matriculeEmployeBase = reader["matricule"].ToString();
-                                string hashEnBase = reader["mdp"].ToString();
-
-                                // 4. On vérifie le mot de passe BCrypt
-                                bool mdpValide = BCrypt.Net.BCrypt.Verify(mdpTapé, hashEnBase);
-
-                                if (mdpValide)
-                                {
-                                    // Bingo ! Le mot de passe est bon.
-
-                                    // 4. On stocke le nom et le matricule dans la session
-                                    Session.Nom = nomEmployeBase;
-                                    Session.Matricule = matriculeEmployeBase;
-
-                                    // 5. C'est ici qu'on passe les données !
-                                    // On ouvre le menu principal en lui donnant le nom et le matricule
-                                    MainMenu menu = new MainMenu();
-                                    menu.Show();
-                                    this.Hide();
-                                }
-                                else
-                                {
-                                    // Échec du mot de passe
-                                    MessageBox.Show("Identifiant ou mot de passe incorrect.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                            }
-                            else
-                            {
-                                // Aucun utilisateur trouvé avec cet identifiant
-                                MessageBox.Show("Identifiant ou mot de passe incorrect.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                    }
-                }
+                // Ouverture du menu principal
+                MainMenu menu = new MainMenu();
+                menu.Show();
+                this.Hide();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Erreur de connexion : \n" + ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Échec (mauvais ID ou mauvais MDP)
+                MessageBox.Show("Identifiant ou mot de passe incorrect.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -96,6 +47,11 @@ namespace Sio_Shop
         {
             // On ferme l'application complètement, sans poser de question
             Environment.Exit(0);
+        }
+
+        private void Connexion_Load(object sender, EventArgs e)
+        {
+            ThemeManager.AppliquerTheme(this);
         }
     }
 }

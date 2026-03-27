@@ -13,7 +13,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "SELECT Num_client, nom, prenom, adresse, mail, tel FROM client";
@@ -44,7 +44,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "SELECT nom, prenom, adresse, mail, tel FROM client WHERE Num_client = @id";
@@ -66,7 +66,7 @@ namespace Sio_Shop.Metiers
         // 3. Pour AJOUTER un nouveau client
         public static void AjouterClient(string nom, string prenom, string adresse, string mail, string tel)
         {
-            using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+            using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
             {
                 maConnexion.Open();
                 string requete = "INSERT INTO client (nom, prenom, adresse, mail, tel) VALUES (@nom, @prenom, @adresse, @mail, @tel)";
@@ -85,7 +85,7 @@ namespace Sio_Shop.Metiers
         // 4. Pour MODIFIER un client existant
         public static void ModifierClient(string id, string nom, string prenom, string adresse, string mail, string tel)
         {
-            using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+            using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
             {
                 maConnexion.Open();
                 string requete = "UPDATE client SET nom=@nom, prenom=@prenom, adresse=@adresse, mail=@mail, tel=@tel WHERE Num_client=@id";
@@ -108,7 +108,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = @"
@@ -130,6 +130,27 @@ namespace Sio_Shop.Metiers
             }
             catch (Exception ex) { MessageBox.Show("Erreur BDD (Achats) : " + ex.Message); }
             return tableau;
+        }
+
+        // 6. Compter le nombre total de clients (pour la page d'accueil)
+        public static int CompterTotalClients()
+        {
+            int total = 0;
+            try
+            {
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
+                {
+                    maConnexion.Open();
+                    string requete = "SELECT COUNT(*) FROM client";
+                    using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
+                    {
+                        // ExecuteScalar renvoie un objet, on le convertit en entier
+                        total = Convert.ToInt32(commande.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Erreur BDD (Compte Clients) : " + ex.Message); }
+            return total;
         }
     }
 }

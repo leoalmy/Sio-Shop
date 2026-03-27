@@ -1,4 +1,5 @@
 ﻿using Sio_Shop.Metiers;
+using Sio_Shop.Utils;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -15,6 +16,8 @@ namespace Sio_Shop
 
         private void Marque_Load(object sender, EventArgs e)
         {
+            ThemeManager.AppliquerTheme(this);
+
             if (Session.Matricule != "0")
             {
                 btn_NouvelleMarque.Visible = false;

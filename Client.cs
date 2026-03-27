@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using Sio_Shop.Metiers;
+using Sio_Shop.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +24,7 @@ namespace Sio_Shop
         // 1. L'événement qui se déclenche quand la page s'ouvre
         private void Clients_Load(object sender, EventArgs e)
         {
+            ThemeManager.AppliquerTheme(this);
             ChargerClients(); // On appelle notre méthode de chargement !
         }
 

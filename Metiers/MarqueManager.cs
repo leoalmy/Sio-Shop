@@ -13,7 +13,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "";
@@ -42,7 +42,7 @@ namespace Sio_Shop.Metiers
             DataTable tableau = new DataTable();
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "SELECT id_marque, nom_marque FROM marque WHERE id_marque = @id";
@@ -63,7 +63,7 @@ namespace Sio_Shop.Metiers
         {
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "INSERT INTO marque (nom_marque) VALUES (@nom)";
@@ -83,7 +83,7 @@ namespace Sio_Shop.Metiers
         {
             try
             {
-                using (MySqlConnection maConnexion = MySQL.GetDBConnection())
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
                 {
                     maConnexion.Open();
                     string requete = "UPDATE marque SET nom_marque = @nom WHERE id_marque = @id";
@@ -97,6 +97,26 @@ namespace Sio_Shop.Metiers
                 }
             }
             catch (Exception ex) { MessageBox.Show("Erreur BDD (Modification Marque) : " + ex.Message); return false; }
+        }
+
+        // 5. Compter le nombre total de marques
+        public static int CompterTotalMarques()
+        {
+            int total = 0;
+            try
+            {
+                using (MySqlConnection maConnexion = BaseManager.GetDBConnection())
+                {
+                    maConnexion.Open();
+                    string requete = "SELECT COUNT(*) FROM marque";
+                    using (MySqlCommand commande = new MySqlCommand(requete, maConnexion))
+                    {
+                        total = Convert.ToInt32(commande.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Erreur BDD (Compte Marques) : " + ex.Message); }
+            return total;
         }
     }
 }

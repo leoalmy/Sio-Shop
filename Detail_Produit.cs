@@ -1,4 +1,5 @@
 ﻿using Sio_Shop.Metiers; // Appel du manager
+using Sio_Shop.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +22,8 @@ namespace Sio_Shop
         // 1. Chargement de la page
         private void Detail_Produit_Load(object sender, EventArgs e)
         {
+            ThemeManager.AppliquerTheme(this);
+
             // --- NOUVEAU : On remplit la liste des marques disponibles ---
             DataTable dtMarques = MarqueManager.ObtenirToutesLesMarques();
             cbx_Marque.DisplayMember = "nom_marque";
